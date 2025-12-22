@@ -11,40 +11,69 @@ import com.motorbike.domain.entities.XeMay;
 import com.motorbike.infrastructure.persistence.jpa.entities.PhuKienXeMayJpaEntity;
 import com.motorbike.infrastructure.persistence.jpa.entities.SanPhamJpaEntity;
 import com.motorbike.infrastructure.persistence.jpa.entities.XeMayJpaEntity;
+import com.motorbike.infrastructure.persistence.jpa.repositories.PhuKienXeMayJpaRepository;
 import com.motorbike.infrastructure.persistence.jpa.repositories.SanPhamJpaRepository;
+import com.motorbike.infrastructure.persistence.jpa.repositories.XeMayJpaRepository;
 
 @Component
 public class ProductRepositoryAdapter implements ProductRepository {
-    
-    private final SanPhamJpaRepository jpaRepository;
-    
-    public ProductRepositoryAdapter(SanPhamJpaRepository jpaRepository) {
-        this.jpaRepository = jpaRepository;
+
+    private final SanPhamJpaRepository sanPhamJpaRepository;
+    private final XeMayJpaRepository xeMayJpaRepository;
+    private final PhuKienXeMayJpaRepository phuKienJpaRepository;
+
+    public ProductRepositoryAdapter(
+            SanPhamJpaRepository sanPhamJpaRepository,
+            XeMayJpaRepository xeMayJpaRepository,
+            PhuKienXeMayJpaRepository phuKienJpaRepository
+    ) {
+        this.sanPhamJpaRepository = sanPhamJpaRepository;
+        this.xeMayJpaRepository = xeMayJpaRepository;
+        this.phuKienJpaRepository = phuKienJpaRepository;
     }
     
     @Override
     public Optional<SanPham> findById(Long id) {
-        return jpaRepository.findById(id)
-                .map(this::toDomain);
+        // Prefer concrete repositories to avoid polymorphic issues
+        Optional<XeMayJpaEntity> xeMay = xeMayJpaRepository.findById(id);
+        if (xeMay.isPresent()) {
+            return Optional.of(toDomain(xeMay.get()));
+        }
+        Optional<PhuKienXeMayJpaEntity> pk = phuKienJpaRepository.findById(id);
+        if (pk.isPresent()) {
+            return Optional.of(toDomain(pk.get()));
+        }
+
+        return sanPhamJpaRepository.findById(id).map(this::toDomain);
     }
     
     @Override
     public SanPham save(SanPham sanPham) {
         SanPhamJpaEntity jpaEntity = toJpaEntity(sanPham);
-        SanPhamJpaEntity saved = jpaRepository.save(jpaEntity);
+        SanPhamJpaEntity saved;
+        if (jpaEntity instanceof XeMayJpaEntity) {
+            saved = xeMayJpaRepository.save((XeMayJpaEntity) jpaEntity);
+        } else if (jpaEntity instanceof PhuKienXeMayJpaEntity) {
+            saved = phuKienJpaRepository.save((PhuKienXeMayJpaEntity) jpaEntity);
+        } else {
+            // Fallback to base repository
+            saved = sanPhamJpaRepository.save(jpaEntity);
+        }
         return toDomain(saved);
     }
     
     @Override
     public boolean existsById(Long id) {
-        return jpaRepository.existsById(id);
+        return sanPhamJpaRepository.existsById(id);
     }
     
     @Override
     public java.util.List<SanPham> findAll() {
-        return jpaRepository.findAll().stream()
-                .map(this::toDomain)
-                .collect(java.util.stream.Collectors.toList());
+        // Fetch from concrete repositories to avoid base entity persister issues
+        java.util.List<SanPham> result = new java.util.ArrayList<>();
+        xeMayJpaRepository.findAll().forEach(e -> result.add(toDomain(e)));
+        phuKienJpaRepository.findAll().forEach(e -> result.add(toDomain(e)));
+        return result;
     }
     
     

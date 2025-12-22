@@ -52,6 +52,7 @@ public class AccessoryRepositoryImpl implements AccessoryRepository {
         jpa.setHinhAnh(domain.getHinhAnh());
         jpa.setSoLuongTonKho(domain.getSoLuongTonKho());
         jpa.setConHang(domain.isConHang());
+        jpa.setLoaiSanPham("PHU_KIEN");  // Set product type for accessories
         jpa.setLoaiPhuKien(domain.getLoaiPhuKien());
         jpa.setThuongHieu(domain.getThuongHieu());
         jpa.setChatLieu(domain.getChatLieu());

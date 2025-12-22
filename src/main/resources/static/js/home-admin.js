@@ -83,6 +83,9 @@ async function loadDashboardData() {
         // Load products
         await loadProducts();
         
+        // Load accessories
+        await loadAccessories();
+        
         // Load orders
         await loadOrders();
         
@@ -117,7 +120,7 @@ async function loadProducts() {
 
         const tbody = document.getElementById('productsTableBody');
         
-        if (!data.products || data.products.length === 0) {
+        if (!Array.isArray(data) || data.length === 0) {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
@@ -128,26 +131,75 @@ async function loadProducts() {
             return;
         }
 
-        tbody.innerHTML = data.products.slice(0, 10).map(product => `
+        tbody.innerHTML = data.slice(0, 5).map(product => `
             <tr>
                 <td>${product.id || 'N/A'}</td>
-                <td><strong>${product.tenSanPham || 'N/A'}</strong></td>
+                <td><strong>${product.name || 'N/A'}</strong></td>
                 <td>${product.category || 'N/A'}</td>
-                <td>${formatCurrency(product.giaBan || 0)}</td>
-                <td>${product.soLuong || 0}</td>
+                <td>${formatCurrency(product.price || 0)}</td>
+                <td>${product.stock || 0}</td>
                 <td>
                     <button class="btn-secondary" onclick="editProduct(${product.id})" style="padding: 6px 12px; font-size: 0.85em; margin-right: 4px;">Sửa</button>
-                    <button class="btn-secondary" onclick="deleteProduct(${product.id})" style="padding: 6px 12px; font-size: 0.85em; background: #fee2e2; color: #991b1b; border-color: #991b1b;">Xóa</button>
                 </td>
             </tr>
         `).join('');
     } catch (error) {
         console.error('Error loading products:', error);
-        document.getElementById('productsTableBody').innerHTML = `
+        const tbody = document.getElementById('productsTableBody');
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; color: #e74c3c;">Lỗi tải sản phẩm</td>
+                </tr>
+            `;
+        }
+    }
+}
+
+// Load accessories list
+async function loadAccessories() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/accessories`);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        const data = await response.json();
+
+        const tbody = document.getElementById('accessoriesTableBody');
+        
+        if (!Array.isArray(data) || data.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+                        Không có phụ kiện
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = data.slice(0, 5).map(accessory => `
             <tr>
-                <td colspan="6" style="text-align: center; color: #e74c3c;">Lỗi tải sản phẩm</td>
+                <td>${accessory.maSanPham || 'N/A'}</td>
+                <td><strong>${accessory.tenSanPham || 'N/A'}</strong></td>
+                <td>${accessory.loaiPhuKien || 'N/A'}</td>
+                <td>${formatCurrency(accessory.gia || 0)}</td>
+                <td>${accessory.soLuongTonKho || 0}</td>
+                <td>
+                    <button class="btn-secondary" onclick="editAccessory(${accessory.maSanPham})" style="padding: 6px 12px; font-size: 0.85em; margin-right: 4px;">Sửa</button>
+                </td>
             </tr>
-        `;
+        `).join('');
+    } catch (error) {
+        console.error('Error loading accessories:', error);
+        const tbody = document.getElementById('accessoriesTableBody');
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; color: #e74c3c;">Lỗi tải phụ kiện</td>
+                </tr>
+            `;
+        }
     }
 }
 
@@ -202,12 +254,16 @@ async function loadOrders() {
 // Load users list
 async function loadUsers() {
     try {
-        const response = await fetch(`${API_BASE_URL}/admin/users`);
+        const response = await fetch(`${API_BASE_URL}/admin/users?admin=true`);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
         const data = await response.json();
 
         const tbody = document.getElementById('usersTableBody');
         
-        if (!data.users || data.users.length === 0) {
+        const users = Array.isArray(data.users) ? data.users : [];
+        if (users.length === 0) {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
@@ -218,13 +274,13 @@ async function loadUsers() {
             return;
         }
 
-        tbody.innerHTML = data.users.slice(0, 10).map(user => `
+        tbody.innerHTML = users.slice(0, 10).map(user => `
             <tr>
-                <td>${user.id || 'N/A'}</td>
-                <td>${user.email || 'N/A'}</td>
-                <td>${user.username || 'N/A'}</td>
-                <td><span class="status-badge">${user.role || 'USER'}</span></td>
-                <td><span class="status-badge status-confirmed">Hoạt động</span></td>
+                <td>${user.id ?? 'N/A'}</td>
+                <td>${user.email ?? 'N/A'}</td>
+                <td>${user.username ?? 'N/A'}</td>
+                <td><span class="status-badge">${user.role ?? 'USER'}</span></td>
+                <td><span class="status-badge status-confirmed">${user.active ? 'Hoạt động' : 'Không hoạt động'}</span></td>
                 <td>
                     <button class="btn-secondary" onclick="editUser(${user.id})" style="padding: 6px 12px; font-size: 0.85em;">Sửa</button>
                 </td>
@@ -232,11 +288,14 @@ async function loadUsers() {
         `).join('');
     } catch (error) {
         console.error('Error loading users:', error);
-        document.getElementById('usersTableBody').innerHTML = `
-            <tr>
-                <td colspan="6" style="text-align: center; color: #e74c3c;">Lỗi tải người dùng</td>
-            </tr>
-        `;
+        const tbody = document.getElementById('usersTableBody');
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; color: #e74c3c;">Lỗi tải người dùng</td>
+                </tr>
+            `;
+        }
     }
 }
 
@@ -279,6 +338,10 @@ function deleteProduct(productId) {
     if (confirm(`Bạn có chắc chắn muốn xóa sản phẩm #${productId}?`)) {
         alert(`Sản phẩm #${productId} đã được xóa`);
     }
+}
+
+function editAccessory(accessoryId) {
+    window.location.href = `edit-accessory.html?id=${accessoryId}`;
 }
 
 function viewOrder(orderId) {

@@ -1,28 +1,27 @@
 package com.motorbike.business.usecase.control;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.motorbike.business.dto.accessory.SearchAccessoriesInputData;
 import com.motorbike.business.dto.accessory.SearchAccessoriesOutputData;
 import com.motorbike.business.dto.accessory.SearchAccessoriesOutputData.AccessoryItem;
-import com.motorbike.business.ports.repository.ProductRepository;
+import com.motorbike.business.ports.repository.AccessoryRepository;
 import com.motorbike.business.usecase.input.SearchAccessoriesInputBoundary;
 import com.motorbike.business.usecase.output.SearchAccessoriesOutputBoundary;
 import com.motorbike.domain.entities.PhuKienXeMay;
-import com.motorbike.domain.entities.SanPham;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class SearchAccessoriesUseCaseControl implements SearchAccessoriesInputBoundary {
 
     private final SearchAccessoriesOutputBoundary outputBoundary;
-    private final ProductRepository productRepository;
+    private final AccessoryRepository accessoryRepository;
 
     public SearchAccessoriesUseCaseControl(
             SearchAccessoriesOutputBoundary outputBoundary,
-            ProductRepository productRepository
+            AccessoryRepository accessoryRepository
     ) {
         this.outputBoundary = outputBoundary;
-        this.productRepository = productRepository;
+        this.accessoryRepository = accessoryRepository;
     }
 
     @Override
@@ -31,11 +30,9 @@ public class SearchAccessoriesUseCaseControl implements SearchAccessoriesInputBo
         Exception errorException = null;
 
         try {
-            List<SanPham> allProducts = productRepository.findAll();
+                List<PhuKienXeMay> allAccessories = accessoryRepository.findAllAccessories();
 
-            List<AccessoryItem> accessories = allProducts.stream()
-                    .filter(p -> p instanceof PhuKienXeMay)
-                    .map(p -> (PhuKienXeMay) p)
+                List<AccessoryItem> accessories = allAccessories.stream()
                     .filter(p -> matchesSearchCriteria(p, inputData))
                     .map(this::mapToAccessoryItem)
                     .collect(Collectors.toList());

@@ -472,9 +472,9 @@ public class UseCaseConfig {
     @Bean
     public GetAllAccessoriesUseCaseControl getAllAccessoriesUseCase(
             GetAllAccessoriesOutputBoundary presenter,
-            ProductRepository productRepository
+            AccessoryRepository accessoryRepository
     ) {
-        return new GetAllAccessoriesUseCaseControl(presenter, productRepository);
+        return new GetAllAccessoriesUseCaseControl(presenter, accessoryRepository);
     }
 
     @Bean
@@ -501,9 +501,9 @@ public class UseCaseConfig {
     @Bean
     public SearchAccessoriesInputBoundary searchAccessoriesUseCase(
             SearchAccessoriesOutputBoundary outputBoundary,
-            ProductRepository productRepository
+            AccessoryRepository accessoryRepository
     ) {
-        return new SearchAccessoriesUseCaseControl(outputBoundary, productRepository);
+        return new SearchAccessoriesUseCaseControl(outputBoundary, accessoryRepository);
     }
 
     @Bean

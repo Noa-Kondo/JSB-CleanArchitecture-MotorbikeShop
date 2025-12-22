@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý phụ kiện | Admin</title>
+
+    <link rel="stylesheet" href="css/common.css?v=3">
+    <link rel="stylesheet" href="css/motorbikes-admin.css?v=1">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home-admin.html" class="logo">Motorbike Shop - Admin</a>
+            <ul class="nav-menu">
+                <li><a href="home-admin.html">Dashboard</a></li>
+                <li><a href="motorbikes-admin.html">Xe máy</a></li>
+                <li><a href="accessories-admin.html" class="active">Phụ kiện</a></li>
+                <li><a href="order.html">Đơn hàng</a></li>
+                <li><a href="#">Người dùng</a></li>
+            </ul>
+            <div class="user-info">
+                <span class="user-greeting">Xin chào, <span id="adminName">Admin</span></span>
+                <button class="btn-logout" onclick="logout()">Đăng xuất</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h1>Danh sách phụ kiện</h1>
+        <p>Quản lý toàn bộ phụ kiện trong hệ thống</p>
+    </div>
+
+    <div class="search-box">
+
+      <div class="search-grid">
+
+          <input id="keyword" class="search-input" placeholder="Tìm theo tên phụ kiện...">
+
+          <input id="type" class="search-input" placeholder="Loại phụ kiện (Mũ bảo hiểm, Ốp...)">
+
+          <input id="brand" class="search-input" placeholder="Thương hiệu...">
+
+          <input id="material" class="search-input" placeholder="Chất liệu (Nhựa, Kim loại...)">
+
+          <input id="minPrice" type="number" class="search-input" placeholder="Giá tối thiểu">
+
+          <input id="maxPrice" type="number" class="search-input" placeholder="Giá tối đa">
+      </div>
+
+      <button class="btn-primary search-btn" onclick="searchAccessories()">Tìm kiếm</button>
+    </div>
+
+
+    <div class="main-container">
+        <div class="admin-section">
+
+            <div class="section-header">
+                <h2 class="section-title">Danh sách phụ kiện</h2>
+
+                <div>
+                    <a href="home-admin.html" class="btn-secondary" style="margin-right: 8px;">
+                        ⬅ Về Dashboard
+                    </a>
+
+                    <a href="add-accessory.html" class="btn-primary btn-add" >
+                        ➕ Thêm sản phẩm
+                    </a>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Mã SP</th>
+                            <th>Hình ảnh</th>
+                            <th>Tên phụ kiện</th>
+                            <th>Loại</th>
+                            <th>Thương hiệu</th>
+                            <th>Chất liệu</th>
+                            <th>Kích thước</th>
+                            <th>Tồn kho</th>
+                            <th>Giá</th>
+                            <th class="actions-col">Thao tác</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="accessoryTableBody">
+                        <tr>
+                            <td colspan="10" style="text-align:center; padding: 30px; color:#999;">
+                                Đang tải dữ liệu...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Motorbike Shop. All rights reserved.</p>
+    </footer>
+
+    <script src="js/common.js?v=3"></script>
+    <script src="js/accessories-admin.js?v=1"></script>
+
+</body>
+</html>
