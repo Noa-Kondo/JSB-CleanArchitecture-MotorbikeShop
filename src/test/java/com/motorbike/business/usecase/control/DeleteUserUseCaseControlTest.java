@@ -47,7 +47,7 @@ class DeleteUserUseCaseControlTest {
         );
     }
 
-    // ===== TC02 =====
+    // ===== TC02 =====Kiểm tra quyền admin
     @Test
     void should_return_error_when_not_admin() {
         DeleteUserInputData input = DeleteUserInputData.forAdmin(false, 1L);
@@ -77,7 +77,7 @@ class DeleteUserUseCaseControlTest {
         );
     }
 
-    // ===== TC04 =====
+    // ===== TC04 =====Kiểm tra user không tồn tại
     @Test
     void should_return_error_when_user_not_found() {
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
@@ -90,7 +90,7 @@ class DeleteUserUseCaseControlTest {
         assertEquals("SYSTEM_ERROR", output.getErrorCode());
     }
 
-    // ===== TC05 =====
+    // ===== TC05 =====Xoá thành công
     @Test
     void should_delete_user_successfully() {
         TaiKhoan user = mock(TaiKhoan.class);
@@ -105,7 +105,7 @@ class DeleteUserUseCaseControlTest {
         verify(userRepository, times(1)).deleteById(1L);
     }
 
-    // ===== TC06 =====
+    // ===== TC06 =====Lỗi hệ thống
     @Test
     void should_return_system_error_when_repository_throw_exception() {
         when(userRepository.findById(any()))

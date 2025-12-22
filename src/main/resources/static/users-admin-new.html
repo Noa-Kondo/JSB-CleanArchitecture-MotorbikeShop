@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý người dùng - Motorbike Shop</title>
+    <link rel="stylesheet" href="css/common.css?v=2">
+    <link rel="stylesheet" href="css/home-admin.css?v=2">
+    <link rel="stylesheet" href="css/users-admin.css?v=2">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home-admin.html" class="logo"><span>Motorbike Shop - Admin</span></a>
+            <ul class="nav-menu">
+                <li><a href="home-admin.html">Dashboard</a></li>
+                <li><a href="motorbikes-admin.html">Xe máy</a></li>
+                <li><a href="accessories-admin.html">Phụ kiện</a></li>
+                <li><a href="order.html">Đơn hàng</a></li>
+                <li><a href="users.html" class="active">Người dùng</a></li>
+            </ul>
+            <div class="user-info">
+                <span class="user-greeting">Xin chào, <span class="user-name" id="adminName">Admin</span></span>
+                <button class="btn-logout" onclick="logout()">Đăng xuất</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Quản lý người dùng</h1>
+        <p>Quản lý tài khoản, quyền hạn và thông tin khách hàng</p>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Statistics Section -->
+        <h2 class="section-title">Tổng quan</h2>
+        <p class="section-subtitle">Thống kê người dùng hệ thống</p>
+
+        <div class="card-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-info">
+                    <h3>Tổng người dùng</h3>
+                    <p class="stat-value" id="totalUsers">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">👨‍💼</div>
+                <div class="stat-info">
+                    <h3>Admin</h3>
+                    <p class="stat-value" id="totalAdmins">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">👤</div>
+                <div class="stat-info">
+                    <h3>Khách hàng</h3>
+                    <p class="stat-value" id="totalCustomers">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <h3>Người dùng hoạt động</h3>
+                    <p class="stat-value" id="activeUsers">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add User Section -->
+        <section class="admin-section">
+            <div class="section-header">
+                <h2 class="section-title">Thêm người dùng mới</h2>
+                <button id="toggleAddFormBtn" class="btn-primary">➕ Thêm người dùng</button>
+            </div>
+
+            <form id="addUserForm" class="add-form" style="display: none;">
+                <div id="addMessage" class="message"></div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Email <span class="required">*</span></label>
+                        <input id="addEmail" type="email" placeholder="example@gmail.com" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Tên đăng nhập <span class="required">*</span></label>
+                        <input id="addUsername" type="text" placeholder="username" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Mật khẩu <span class="required">*</span></label>
+                        <input id="addPassword" type="password" placeholder="Ít nhất 6 ký tự" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại</label>
+                        <input id="addPhone" type="tel" placeholder="0123456789" />
+                    </div>
+                    <div class="form-group">
+                        <label>Địa chỉ</label>
+                        <input id="addAddress" type="text" placeholder="Nhập địa chỉ" />
+                    </div>
+                    <div class="form-group">
+                        <label>Vai trò</label>
+                        <select id="addRole">
+                            <option value="CUSTOMER">CUSTOMER</option>
+                            <option value="ADMIN">ADMIN</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group form-checkbox">
+                    <label>
+                        <input id="addActive" type="checkbox" checked />
+                        <span>Kích hoạt tài khoản</span>
+                    </label>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Lưu</button>
+                    <button type="button" class="btn-secondary" onclick="document.getElementById('addUserForm').style.display='none'">Hủy</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Search & Filter Section -->
+        <section class="admin-section">
+            <div class="section-header">
+                <h2 class="section-title">Danh sách người dùng</h2>
+                <div class="search-controls">
+                    <input type="text" id="searchKeyword" placeholder="🔍 Tìm kiếm theo email, username..." class="search-input" />
+                    <button id="loadBtn" class="btn-primary">Tải dữ liệu</button>
+                </div>
+            </div>
+
+            <div id="message" class="message"></div>
+
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Email</th>
+                            <th>Username</th>
+                            <th>Vai trò</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày tạo</th>
+                            <th>Cập nhật</th>
+                            <th>Đăng nhập cuối</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td colspan="9" style="text-align: center; padding: 40px; color: #999;">
+                                Đang tải dữ liệu...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Edit User Modal -->
+        <div id="editUserModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Chỉnh sửa người dùng</h2>
+                    <button class="modal-close" onclick="closeEditModal()">&times;</button>
+                </div>
+                <form id="editUserForm" class="form">
+                    <div id="editMessage" class="message"></div>
+                    
+                    <div class="form-group">
+                        <label>ID (không thể sửa)</label>
+                        <input id="editId" type="text" disabled />
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input id="editEmail" type="email" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Tên đăng nhập</label>
+                        <input id="editUsername" type="text" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Mật khẩu (để trống nếu không đổi)</label>
+                        <input id="editPassword" type="password" />
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại</label>
+                        <input id="editPhone" type="tel" />
+                    </div>
+                    <div class="form-group">
+                        <label>Địa chỉ</label>
+                        <input id="editAddress" type="text" />
+                    </div>
+                    <div class="form-group">
+                        <label>Vai trò</label>
+                        <select id="editRole">
+                            <option value="CUSTOMER">CUSTOMER</option>
+                            <option value="ADMIN">ADMIN</option>
+                        </select>
+                    </div>
+                    <div class="form-group form-checkbox">
+                        <label>
+                            <input id="editActive" type="checkbox" />
+                            <span>Kích hoạt tài khoản</span>
+                        </label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Lưu thay đổi</button>
+                        <button type="button" class="btn-secondary" onclick="closeEditModal()">Hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div id="deleteConfirmModal" class="modal" style="display: none;">
+            <div class="modal-content" style="max-width: 400px;">
+                <div class="modal-header">
+                    <h2>Xác nhận xóa</h2>
+                </div>
+                <p id="deleteConfirmText" style="margin: 20px 0; font-size: 16px;"></p>
+                <div class="form-actions">
+                    <button id="confirmDeleteBtn" class="btn-danger">Xóa</button>
+                    <button type="button" class="btn-secondary" onclick="closeDeleteModal()">Hủy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Motorbike Shop. Bảo lưu mọi quyền.</p>
+    </footer>
+
+    <script src="js/admin-users-new.js"></script>
+</body>
+</html>

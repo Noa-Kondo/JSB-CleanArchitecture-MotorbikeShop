@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thêm người dùng | Admin</title>
+  <link rel="stylesheet" href="css/common.css?v=3">
+  <link rel="stylesheet" href="css/motorbikes-admin.css?v=1">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="home-admin.html" class="logo">Motorbike Shop - Admin</a>
+      <ul class="nav-menu">
+        <li><a href="home-admin.html">Dashboard</a></li>
+        <li><a href="motorbikes-admin.html">Xe máy</a></li>
+        <li><a href="accessories-admin.html">Phụ kiện</a></li>
+        <li><a href="order.html">Đơn hàng</a></li>
+        <li><a href="users.html" class="active">Người dùng</a></li>
+      </ul>
+      <div class="user-info">
+        <span class="user-greeting">Xin chào, <span id="adminName">Admin</span></span>
+        <button class="btn-logout" onclick="logout()">Đăng xuất</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <h1>Thêm người dùng</h1>
+    <p>Tạo tài khoản mới cho hệ thống</p>
+  </div>
+
+  <div class="main-container">
+    <div class="admin-section">
+      <div class="section-header">
+        <h2 class="section-title">Thông tin người dùng</h2>
+        <div>
+          <a href="users.html" class="btn-secondary">⬅ Danh sách người dùng</a>
+        </div>
+      </div>
+
+      <div id="addMessage" class="message" style="display:none;"></div>
+
+      <form id="createUserForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Email <span class="required">*</span></label>
+            <input id="email" type="email" class="form-control" required placeholder="example@gmail.com" />
+          </div>
+          <div class="form-group">
+            <label>Tên đăng nhập <span class="required">*</span></label>
+            <input id="username" type="text" class="form-control" required placeholder="username" />
+          </div>
+          <div class="form-group">
+            <label>Mật khẩu <span class="required">*</span></label>
+            <input id="password" type="password" class="form-control" required placeholder="Ít nhất 6 ký tự" />
+          </div>
+          <div class="form-group">
+            <label>Số điện thoại</label>
+            <input id="phone" type="tel" class="form-control" placeholder="0123456789" />
+          </div>
+          <div class="form-group">
+            <label>Địa chỉ</label>
+            <input id="address" type="text" class="form-control" placeholder="Nhập địa chỉ" />
+          </div>
+          <div class="form-group">
+            <label>Vai trò</label>
+            <select id="role" class="form-control">
+              <option value="CUSTOMER">CUSTOMER</option>
+              <option value="ADMIN">ADMIN</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group form-checkbox">
+          <label>
+            <input id="active" type="checkbox" checked />
+            <span>Kích hoạt tài khoản</span>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Tạo người dùng</button>
+          <a href="users.html" class="btn-secondary">Hủy</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Motorbike Shop. All rights reserved.</p>
+  </footer>
+
+  <script src="js/common.js?v=3"></script>
+  <script src="js/add-user.js?v=1"></script>
+</body>
+</html>

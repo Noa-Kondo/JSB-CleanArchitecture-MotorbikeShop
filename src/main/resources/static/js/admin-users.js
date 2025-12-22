@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const addForm = document.getElementById('addUserForm');
   const addMessage = document.getElementById('addMessage');
+  const toggleAddFormBtn = document.getElementById('toggleAddFormBtn');
 
   const editForm = document.getElementById('editUserForm');
   const editMessage = document.getElementById('editMessage');
@@ -177,11 +178,17 @@ document.addEventListener('DOMContentLoaded', () => {
         tr.appendChild(usernameTd);
 
         const roleTd = document.createElement('td');
-        roleTd.textContent = u.role ?? '';
+        const roleSpan = document.createElement('span');
+        roleSpan.className = 'role-badge ' + (u.role === 'ADMIN' ? 'role-admin' : 'role-customer');
+        roleSpan.textContent = u.role ?? '';
+        roleTd.appendChild(roleSpan);
         tr.appendChild(roleTd);
 
         const activeTd = document.createElement('td');
-        activeTd.textContent = (u.active === true) ? 'Yes' : 'No';
+        const statusSpan = document.createElement('span');
+        statusSpan.className = 'status-badge ' + (u.active === true ? 'status-active' : 'status-inactive');
+        statusSpan.textContent = (u.active === true) ? 'Hoạt động' : 'Bị khóa';
+        activeTd.appendChild(statusSpan);
         tr.appendChild(activeTd);
 
         const createdTd = document.createElement('td');
@@ -196,12 +203,15 @@ document.addEventListener('DOMContentLoaded', () => {
         lastLoginTd.textContent = formatDate(u.lastLogin);
         tr.appendChild(lastLoginTd);
 
-        // Action cell: Edit + Delete
+        // Action cell: Edit + Delete + Toggle Active + Change Role + Reset Password
         const actionTd = document.createElement('td');
+        actionTd.className = 'action-buttons';
+
         const editBtn = document.createElement('button');
-        editBtn.textContent = 'Sửa';
+        editBtn.className = 'btn-icon btn-edit';
+        editBtn.title = 'Sửa';
+        editBtn.textContent = '✏️';
         editBtn.addEventListener('click', () => {
-          // provide extra fields to open form: include phone/address if available
           const userForEdit = {
             id: u.id,
             email: u.email,
@@ -212,14 +222,30 @@ document.addEventListener('DOMContentLoaded', () => {
             active: u.active
           };
           openEditForm(userForEdit);
+          document.getElementById('editSection').style.display = 'block';
         });
         actionTd.appendChild(editBtn);
 
         const delBtn = document.createElement('button');
-        delBtn.textContent = 'Xóa';
-        delBtn.style.marginLeft = '6px';
+        delBtn.className = 'btn-icon btn-delete';
+        delBtn.title = 'Xóa';
+        delBtn.textContent = '🗑️';
         delBtn.addEventListener('click', () => callDeleteUser(u.id));
         actionTd.appendChild(delBtn);
+
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'btn-icon btn-toggle';
+        toggleBtn.title = u.active ? 'Khóa' : 'Mở khóa';
+        toggleBtn.textContent = u.active ? '🔒' : '🔓';
+        toggleBtn.addEventListener('click', () => toggleActiveUser(u));
+        actionTd.appendChild(toggleBtn);
+
+        const roleBtn = document.createElement('button');
+        roleBtn.className = 'btn-icon btn-role';
+        roleBtn.title = 'Chuyển vai trò';
+        roleBtn.textContent = '🛡️';
+        roleBtn.addEventListener('click', () => changeRole(u));
+        actionTd.appendChild(roleBtn);
 
         tr.appendChild(actionTd);
 
@@ -234,6 +260,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   loadBtn.addEventListener('click', loadUsers);
+  if (toggleAddFormBtn && addForm) {
+    toggleAddFormBtn.addEventListener('click', () => {
+      const isHidden = addForm.style.display === 'none' || getComputedStyle(addForm).display === 'none';
+      addForm.style.display = isHidden ? 'block' : 'none';
+    });
+  }
 
   // Debounce: tự động tìm 400ms sau khi gõ
   let debounceTimer = null;
@@ -244,8 +276,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 400);
   });
 
-  // Handle add user form
-  addForm.addEventListener('submit', async (e) => {
+  // Handle add user form (optional presence)
+  if (addForm) addForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     showMessage(addMessage, 'Đang thêm người dùng...', false);
 
@@ -298,8 +330,62 @@ document.addEventListener('DOMContentLoaded', () => {
     editForm.style.display = 'none';
     editForm.reset();
     editMessage.textContent = '';
+    const editSection = document.getElementById('editSection');
+    if (editSection) editSection.style.display = 'none';
   });
 
   // Tự động tải khi mở page
   loadUsers();
+
+  // Extra actions
+  async function toggleActiveUser(user) {
+    const body = {
+      email: user.email,
+      username: user.username,
+      password: null,
+      phoneNumber: user.phoneNumber || null,
+      address: user.address || null,
+      role: user.role,
+      active: !user.active
+    };
+    const resp = await fetch('/api/admin/users/' + user.id + '?admin=true', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      credentials: 'same-origin'
+    });
+    const data = await resp.json().catch(() => null);
+    if (!resp.ok || !data || !data.success) {
+      showMessage(message, `Lỗi cập nhật trạng thái: ${data ? (data.errorCode || data.message) : resp.statusText}`, true);
+      return;
+    }
+    showMessage(message, 'Cập nhật trạng thái thành công', false);
+    loadUsers();
+  }
+
+  async function changeRole(user) {
+    const newRole = (user.role === 'ADMIN') ? 'CUSTOMER' : 'ADMIN';
+    const body = {
+      email: user.email,
+      username: user.username,
+      password: null,
+      phoneNumber: user.phoneNumber || null,
+      address: user.address || null,
+      role: newRole,
+      active: user.active
+    };
+    const resp = await fetch('/api/admin/users/' + user.id + '?admin=true', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      credentials: 'same-origin'
+    });
+    const data = await resp.json().catch(() => null);
+    if (!resp.ok || !data || !data.success) {
+      showMessage(message, `Lỗi đổi vai trò: ${data ? (data.errorCode || data.message) : resp.statusText}`, true);
+      return;
+    }
+    showMessage(message, 'Đã đổi vai trò người dùng', false);
+    loadUsers();
+  }
 });

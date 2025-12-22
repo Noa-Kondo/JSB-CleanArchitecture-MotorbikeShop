@@ -80,9 +80,6 @@ async function loadDashboardData() {
         // Load statistics
         await loadStatistics();
         
-        // Load products
-        await loadProducts();
-        
         // Load accessories
         await loadAccessories();
         
@@ -109,50 +106,6 @@ async function loadStatistics() {
         document.getElementById('pendingOrders').textContent = '8';
     } catch (error) {
         console.error('Error loading statistics:', error);
-    }
-}
-
-// Load products list
-async function loadProducts() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/products`);
-        const data = await response.json();
-
-        const tbody = document.getElementById('productsTableBody');
-        
-        if (!Array.isArray(data) || data.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
-                        Không có sản phẩm
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-
-        tbody.innerHTML = data.slice(0, 5).map(product => `
-            <tr>
-                <td>${product.id || 'N/A'}</td>
-                <td><strong>${product.name || 'N/A'}</strong></td>
-                <td>${product.category || 'N/A'}</td>
-                <td>${formatCurrency(product.price || 0)}</td>
-                <td>${product.stock || 0}</td>
-                <td>
-                    <button class="btn-secondary" onclick="editProduct(${product.id})" style="padding: 6px 12px; font-size: 0.85em; margin-right: 4px;">Sửa</button>
-                </td>
-            </tr>
-        `).join('');
-    } catch (error) {
-        console.error('Error loading products:', error);
-        const tbody = document.getElementById('productsTableBody');
-        if (tbody) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="6" style="text-align: center; color: #e74c3c;">Lỗi tải sản phẩm</td>
-                </tr>
-            `;
-        }
     }
 }
 

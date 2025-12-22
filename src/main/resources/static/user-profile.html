@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin tài khoản - Motorbike Shop</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/user-profile.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="home.html" class="logo"><span>🏍 Motorbike Shop</span></a>
+            <ul class="nav-menu">
+                <li><a href="home.html">Trang chủ</a></li>
+                <li><a href="motorbikes.html">Xe máy</a></li>
+                <li><a href="motorbikes.html">Phụ kiện</a></li>
+                <li><a href="cart.html">🛒 Giỏ hàng</a></li>
+            </ul>
+            <div class="user-info">
+                <span class="user-greeting">Xin chào, <span class="user-name" id="userName">User</span></span>
+                <button class="btn-logout" onclick="logout()">Đăng xuất</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-small">
+        <h1>Thông tin tài khoản</h1>
+        <p>Quản lý thông tin cá nhân của bạn</p>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="profile-wrapper">
+            <!-- Left Sidebar -->
+            <aside class="profile-sidebar">
+                <div class="profile-card">
+                    <div class="profile-avatar">👤</div>
+                    <h3 id="sidebarUsername">Người dùng</h3>
+                    <p id="sidebarEmail" class="email">user@example.com</p>
+                    <div class="user-role">
+                        <span id="sidebarRole" class="role-badge role-customer">CUSTOMER</span>
+                    </div>
+                </div>
+                <div class="profile-menu">
+                    <a href="#profile-info" class="menu-item active" onclick="switchTab('profile')">
+                        👤 Thông tin cá nhân
+                    </a>
+                    <a href="#password" class="menu-item" onclick="switchTab('password')">
+                        🔐 Đổi mật khẩu
+                    </a>
+                    <a href="my-orders.html" class="menu-item">
+                        📦 Đơn hàng của tôi
+                    </a>
+                </div>
+            </aside>
+
+            <!-- Right Content -->
+            <div class="profile-content">
+                <!-- Profile Tab -->
+                <div id="profile-tab" class="tab-content active">
+                    <div class="tab-header">
+                        <h2>Thông tin cá nhân</h2>
+                        <p class="subtitle">Cập nhật thông tin tài khoản của bạn</p>
+                    </div>
+
+                    <div class="form-container">
+                        <form id="profileForm" onsubmit="updateProfile(event)">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" class="form-control" readonly>
+                                <small>Email không thể thay đổi</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="username">Tên đăng nhập</label>
+                                <input type="text" id="username" class="form-control" readonly>
+                                <small>Tên đăng nhập không thể thay đổi</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="fullName">Họ và tên</label>
+                                <input type="text" id="fullName" class="form-control" readonly>
+                                <small>Tên của bạn trong hệ thống</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Số điện thoại <span class="required">*</span></label>
+                                <input type="tel" id="phone" class="form-control" placeholder="Nhập số điện thoại" required>
+                                <small>Số điện thoại để liên hệ đơn hàng</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="address">Địa chỉ <span class="required">*</span></label>
+                                <textarea id="address" class="form-control" placeholder="Nhập địa chỉ giao hàng" rows="3" required></textarea>
+                                <small>Địa chỉ giao hàng mặc định</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="createdDate">Ngày tạo tài khoản</label>
+                                <input type="text" id="createdDate" class="form-control" readonly>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary">💾 Lưu thay đổi</button>
+                                <button type="button" class="btn-secondary" onclick="resetProfileForm()">↺ Đặt lại</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Password Tab -->
+                <div id="password-tab" class="tab-content">
+                    <div class="tab-header">
+                        <h2>Đổi mật khẩu</h2>
+                        <p class="subtitle">Cập nhật mật khẩu để bảo vệ tài khoản của bạn</p>
+                    </div>
+
+                    <div class="form-container">
+                        <form id="passwordForm" onsubmit="changePassword(event)">
+                            <div class="form-group">
+                                <label for="currentPassword">Mật khẩu hiện tại <span class="required">*</span></label>
+                                <div class="password-input-group">
+                                    <input type="password" id="currentPassword" class="form-control" placeholder="Nhập mật khẩu hiện tại" required>
+                                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('currentPassword')">👁</button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="newPassword">Mật khẩu mới <span class="required">*</span></label>
+                                <div class="password-input-group">
+                                    <input type="password" id="newPassword" class="form-control" placeholder="Nhập mật khẩu mới" required>
+                                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('newPassword')">👁</button>
+                                </div>
+                                <small>Mật khẩu phải có ít nhất 6 ký tự</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="confirmPassword">Xác nhận mật khẩu <span class="required">*</span></label>
+                                <div class="password-input-group">
+                                    <input type="password" id="confirmPassword" class="form-control" placeholder="Nhập lại mật khẩu mới" required>
+                                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('confirmPassword')">👁</button>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary">🔐 Đổi mật khẩu</button>
+                                <button type="button" class="btn-secondary" onclick="resetPasswordForm()">↺ Đặt lại</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Modal -->
+    <div id="alertModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAlert()">&times;</span>
+            <h2 id="alertTitle">Thông báo</h2>
+            <p id="alertMessage"></p>
+            <button onclick="closeAlert()" class="btn-primary">OK</button>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display:none;">
+        <div class="spinner"></div>
+        <p>Đang xử lý...</p>
+    </div>
+
+    <script src="js/user-profile.js"></script>
+</body>
+</html>

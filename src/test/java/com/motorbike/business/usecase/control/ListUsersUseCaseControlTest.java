@@ -33,7 +33,7 @@ class ListUsersUseCaseControlTest {
         useCase = new ListUsersUseCaseControl(outputBoundary, userRepository);
     }
 
-    // ===== TC01 =====
+    // ===== TC01 ===== Không phải admin
     @Test
     void should_return_error_when_not_admin() {
         ListUsersInputData input = ListUsersInputData.forAdmin(false, null);
@@ -48,7 +48,7 @@ class ListUsersUseCaseControlTest {
         assertNotNull(output.getErrorCode());
     }
 
-    // ===== TC02 =====
+    // ===== TC02 =====Admin, không keyword → lấy tất cả người dùng
     @Test
     void should_return_error_when_input_is_null() {
         useCase.execute(null);
@@ -61,7 +61,7 @@ class ListUsersUseCaseControlTest {
         assertNotNull(output.getErrorCode());
     }
 
-    // ===== TC03 =====
+    // ===== TC03 =====Admin, không keyword → trả về tất cả users:
     @Test
     void should_return_all_users_when_admin_and_no_keyword() {
         when(userRepository.findAll()).thenReturn(mockUsers());
@@ -77,7 +77,7 @@ class ListUsersUseCaseControlTest {
         assertEquals(2, output.getUsers().size()); // ✅ getUsers() (không phải getItems)
     }
 
-    // ===== TC04 =====
+    // ===== TC04 =====Lọc theo keyword
     @Test
     void should_filter_users_by_keyword() {
         when(userRepository.findAll()).thenReturn(mockUsers());
@@ -94,7 +94,7 @@ class ListUsersUseCaseControlTest {
         assertEquals("admin@gmail.com", output.getUsers().get(0).email);
     }
 
-    // ===== TC05 =====
+    // ===== TC05 ===== Keyword không khớp → danh sách rỗng
     @Test
     void should_return_empty_list_when_keyword_not_match() {
         when(userRepository.findAll()).thenReturn(mockUsers());
@@ -110,7 +110,7 @@ class ListUsersUseCaseControlTest {
         assertEquals(0, output.getUsers().size());
     }
 
-    // ===== TC06 =====
+    // ===== TC06 ===== Lỗi DB → SYSTEM_ERROR:
     @Test
     void should_return_system_error_when_repository_throw_exception() {
         when(userRepository.findAll()).thenThrow(new RuntimeException("DB error"));

@@ -1,18 +1,17 @@
 package com.motorbike.business.usecase.control;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.Test;
 
 import com.motorbike.adapters.presenters.SearchAccessoriesPresenter;
 import com.motorbike.adapters.viewmodels.SearchAccessoriesViewModel;
 import com.motorbike.business.dto.accessory.SearchAccessoriesInputData;
-import com.motorbike.business.ports.repository.ProductRepository;
+import com.motorbike.business.ports.repository.AccessoryRepository;
 import com.motorbike.business.usecase.output.SearchAccessoriesOutputBoundary;
 import com.motorbike.domain.entities.PhuKienXeMay;
 
@@ -20,7 +19,7 @@ public class SearchAccessoriesUseCaseControlTest {
 
     @Test
     public void testSearchByKeyword() {
-        ProductRepository repo = new MockProductRepo();
+        AccessoryRepository repo = new MockAccessoryRepo();
         SearchAccessoriesViewModel vm = new SearchAccessoriesViewModel();
         SearchAccessoriesOutputBoundary presenter = new SearchAccessoriesPresenter(vm);
 
@@ -34,7 +33,7 @@ public class SearchAccessoriesUseCaseControlTest {
 
     @Test
     public void testSearchByTypeAndBrand() {
-        ProductRepository repo = new MockProductRepo();
+        AccessoryRepository repo = new MockAccessoryRepo();
         SearchAccessoriesViewModel vm = new SearchAccessoriesViewModel();
         SearchAccessoriesOutputBoundary presenter = new SearchAccessoriesPresenter(vm);
 
@@ -48,7 +47,7 @@ public class SearchAccessoriesUseCaseControlTest {
 
     @Test
     public void testSearchByPriceRange() {
-        ProductRepository repo = new MockProductRepo();
+        AccessoryRepository repo = new MockAccessoryRepo();
         SearchAccessoriesViewModel vm = new SearchAccessoriesViewModel();
         SearchAccessoriesOutputBoundary presenter = new SearchAccessoriesPresenter(vm);
 
@@ -62,7 +61,7 @@ public class SearchAccessoriesUseCaseControlTest {
 
     @Test
     public void testSearch_NullInput_ReturnsAll() {
-        ProductRepository repo = new MockProductRepo();
+        AccessoryRepository repo = new MockAccessoryRepo();
         SearchAccessoriesViewModel vm = new SearchAccessoriesViewModel();
         SearchAccessoriesOutputBoundary presenter = new SearchAccessoriesPresenter(vm);
 
@@ -75,7 +74,7 @@ public class SearchAccessoriesUseCaseControlTest {
 
     @Test
     public void testSearch_CaseInsensitive() {
-        ProductRepository repo = new MockProductRepo();
+        AccessoryRepository repo = new MockAccessoryRepo();
         SearchAccessoriesViewModel vm = new SearchAccessoriesViewModel();
         SearchAccessoriesOutputBoundary presenter = new SearchAccessoriesPresenter(vm);
 
@@ -89,7 +88,7 @@ public class SearchAccessoriesUseCaseControlTest {
 
     @Test
     public void testSearch_NoMatches() {
-        ProductRepository repo = new MockProductRepo();
+        AccessoryRepository repo = new MockAccessoryRepo();
         SearchAccessoriesViewModel vm = new SearchAccessoriesViewModel();
         SearchAccessoriesOutputBoundary presenter = new SearchAccessoriesPresenter(vm);
 
@@ -103,7 +102,7 @@ public class SearchAccessoriesUseCaseControlTest {
 
     @Test
     public void testSearch_MinGreaterThanMax() {
-        ProductRepository repo = new MockProductRepo();
+        AccessoryRepository repo = new MockAccessoryRepo();
         SearchAccessoriesViewModel vm = new SearchAccessoriesViewModel();
         SearchAccessoriesOutputBoundary presenter = new SearchAccessoriesPresenter(vm);
 
@@ -117,7 +116,7 @@ public class SearchAccessoriesUseCaseControlTest {
 
     @Test
     public void testSearch_ByMaterial() {
-        ProductRepository repo = new MockProductRepo();
+        AccessoryRepository repo = new MockAccessoryRepo();
         SearchAccessoriesViewModel vm = new SearchAccessoriesViewModel();
         SearchAccessoriesOutputBoundary presenter = new SearchAccessoriesPresenter(vm);
 
@@ -129,26 +128,21 @@ public class SearchAccessoriesUseCaseControlTest {
         assertEquals(1, vm.accessories.size());
     }
 
-    private static class MockProductRepo implements ProductRepository {
+    private static class MockAccessoryRepo implements AccessoryRepository {
 
         @Override
-        public java.util.Optional<com.motorbike.domain.entities.SanPham> findById(Long id) {
+        public PhuKienXeMay save(PhuKienXeMay accessory) {
+            return accessory;
+        }
+
+        @Override
+        public java.util.Optional<PhuKienXeMay> findById(Long id) {
             return java.util.Optional.empty();
         }
 
         @Override
-        public com.motorbike.domain.entities.SanPham save(com.motorbike.domain.entities.SanPham product) {
-            return product;
-        }
-
-        @Override
-        public boolean existsById(Long productId) {
-            return false;
-        }
-
-        @Override
-        public List<com.motorbike.domain.entities.SanPham> findAll() {
-            List<com.motorbike.domain.entities.SanPham> list = new ArrayList<>();
+        public List<PhuKienXeMay> findAllAccessories() {
+            List<PhuKienXeMay> list = new ArrayList<>();
             PhuKienXeMay p1 = new PhuKienXeMay("Mũ bảo hiểm Royal","Mũ fullface", new BigDecimal("900000"), "/img/helmet.jpg", 50, "Mũ bảo hiểm", "Royal", "Nhựa", "L");
             PhuKienXeMay p2 = new PhuKienXeMay("Găng tay bảo hộ","Găng tay da", new BigDecimal("250000"), "/img/gloves.jpg", 100, "Găng tay bảo hộ", "SafeHand", "Da", "M");
             PhuKienXeMay p3 = new PhuKienXeMay("Áo mưa","Áo mưa chống nước", new BigDecimal("120000"), "/img/raincoat.jpg", 200, "Áo mưa", "RainPro", "Vải", "XL");
@@ -156,6 +150,11 @@ public class SearchAccessoriesUseCaseControlTest {
             list.add(p2);
             list.add(p3);
             return list;
+        }
+
+        @Override
+        public void deleteById(Long id) {
+            // Mock method - no operation
         }
     }
 }

@@ -1,90 +1,143 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Admin - Danh sách người dùng</title>
-  <link rel="stylesheet" href="css/admin-users.css" />
+  <title>Quản lý người dùng - Motorbike Shop</title>
+  <link rel="stylesheet" href="css/common.css?v=3" />
+  <link rel="stylesheet" href="css/motorbikes-admin.css?v=1" />
 </head>
 <body>
-  <div class="container">
-    <h1>Danh sách người dùng</h1>
-
-     <div class="controls">
-      <label for="keyword">Tìm kiếm:</label>
-      <input id="keyword" placeholder="Email, username, role..." style="width: 40%" />
-      <label for="token">Token (nếu có):</label>
-      <input id="token" placeholder="Bearer &lt;token&gt;" style="width: 36%" />
-      <button id="loadBtn">Tìm / Tải</button>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="home-admin.html" class="logo"><span>Motorbike Shop - Admin</span></a>
+      <ul class="nav-menu">
+        <li><a href="home-admin.html">Dashboard</a></li>
+        <li><a href="motorbikes-admin.html">Xe máy</a></li>
+        <li><a href="accessories-admin.html">Phụ kiện</a></li>
+        <li><a href="order.html">Đơn hàng</a></li>
+        <li><a href="users.html" class="active">Người dùng</a></li>
+      </ul>
+      <div class="user-info">
+        <span class="user-greeting">Xin chào, <span class="user-name" id="adminName">Admin</span></span>
+        <button class="btn-logout" onclick="logout()">Đăng xuất</button>
+      </div>
     </div>
+  </nav>
 
-    <hr/>
-
-    <h2>Thêm người dùng</h2>
-    <div id="addMessage" class="message"></div>
-    <form id="addUserForm">
-      <div>
-        <label>Email:</label>
-        <input id="addEmail" type="email" required />
-      </div>
-      <div>
-        <label>Username:</label>
-        <input id="addUsername" required />
-      </div>
-      <div>
-        <label>Password:</label>
-        <input id="addPassword" type="password" required />
-      </div>
-      <div>
-        <label>Phone:</label>
-        <input id="addPhone" />
-      </div>
-      <div>
-        <label>Address:</label>
-        <input id="addAddress" />
-      </div>
-      <div>
-        <label>Role:</label>
-        <select id="addRole">
-          <option value="">(default)</option>
-          <option value="USER">USER</option>
-          <option value="ADMIN">ADMIN</option>
-        </select>
-      </div>
-      
-      <div>
-        <label>Active:</label>
-        <input id="addActive" type="checkbox" checked />
-      </div>
-
-       <div style="margin-top:8px;">
-        <button type="submit">Lưu thay đổi</button>
-        <button type="button" id="cancelEditBtn">Hủy</button>
-      </div>
-    </form>
-
-    <hr/>
-
-    <div id="message" class="message"></div>
-
-    <table id="usersTable" class="users-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Email</th>
-          <th>Username</th>
-          <th>Role</th>
-          <th>Active</th>
-          <th>Created At</th>
-          <th>Updated At</th>
-          <th>Last Login</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Quản lý người dùng</h1>
+    <p>Quản lý tài khoản, vai trò và trạng thái hoạt động</p>
   </div>
 
-  <script src="js/admin-users.js"></script>
+  <!-- Search Box (match accessories layout) -->
+  <div class="search-box">
+    <div class="search-grid">
+      <input id="keyword" class="search-input" placeholder="Tìm theo email, username...">
+      <!-- Keep token for JS compatibility, but hidden for UI consistency -->
+      <input id="token" type="text" style="display:none;" />
+    </div>
+    <button id="loadBtn" class="btn-primary search-btn">Tìm kiếm</button>
+  </div>
+
+  <!-- Main -->
+  <div class="main-container">
+    <!-- Actions Section header mirrors accessories page -->
+    <section class="admin-section">
+      <div class="section-header">
+        <h2 class="section-title">Danh sách người dùng</h2>
+        <div>
+          <a href="home-admin.html" class="btn-secondary" style="margin-right: 8px;">⬅ Về Dashboard</a>
+          <a href="add-user.html" class="btn-primary btn-add">➕ Thêm người dùng</a>
+        </div>
+      </div>
+
+    <!-- List Section -->
+    <section class="admin-section">
+      <!-- Section header already above; keep table below -->
+
+      <div id="message" class="message"></div>
+
+      <div class="table-wrapper">
+        <table id="usersTable" class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Email</th>
+              <th>Username</th>
+              <th>Vai trò</th>
+              <th>Trạng thái</th>
+              <th>Ngày tạo</th>
+              <th>Cập nhật</th>
+              <th>Đăng nhập cuối</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Edit Form (toggle display) -->
+    <section class="admin-section" id="editSection" style="display:none;">
+      <h2 class="section-title">Chỉnh sửa người dùng</h2>
+      <form id="editUserForm">
+        <div id="editMessage" class="message"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>ID</label>
+            <input id="editId" disabled />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input id="editEmail" type="email" required />
+          </div>
+          <div class="form-group">
+            <label>Tên đăng nhập</label>
+            <input id="editUsername" required />
+          </div>
+          <div class="form-group">
+            <label>Mật khẩu (để trống nếu không đổi)</label>
+            <input id="editPassword" type="password" />
+          </div>
+          <div class="form-group">
+            <label>Số điện thoại</label>
+            <input id="editPhone" />
+          </div>
+          <div class="form-group">
+            <label>Địa chỉ</label>
+            <input id="editAddress" />
+          </div>
+          <div class="form-group">
+            <label>Vai trò</label>
+            <select id="editRole">
+              <option value="CUSTOMER">CUSTOMER</option>
+              <option value="ADMIN">ADMIN</option>
+            </select>
+          </div>
+          <div class="form-group form-checkbox">
+            <label>
+              <input id="editActive" type="checkbox" />
+              <span>Kích hoạt tài khoản</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Lưu thay đổi</button>
+          <button type="button" class="btn-secondary" id="cancelEditBtn">Hủy</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 Motorbike Shop. Bảo lưu mọi quyền.</p>
+  </footer>
+
+  <script src="js/common.js?v=3"></script>
+  <script src="js/admin-users.js?v=1"></script>
 </body>
 </html>

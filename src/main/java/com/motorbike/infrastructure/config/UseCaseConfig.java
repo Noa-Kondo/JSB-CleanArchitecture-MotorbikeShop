@@ -1,5 +1,6 @@
 package com.motorbike.infrastructure.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.annotation.RequestScope;
@@ -33,12 +34,14 @@ import com.motorbike.adapters.viewmodels.AddMotorbikeViewModel;
 import com.motorbike.adapters.viewmodels.AddToCartViewModel;
 import com.motorbike.adapters.viewmodels.AddUserViewModel;
 import com.motorbike.adapters.viewmodels.CancelOrderViewModel;
+import com.motorbike.adapters.viewmodels.ChangePasswordViewModelImpl;
 import com.motorbike.adapters.viewmodels.CheckoutViewModel;
 import com.motorbike.adapters.viewmodels.DeleteAccessoryViewModel;
 import com.motorbike.adapters.viewmodels.DeleteMotorbikeViewModel;
 import com.motorbike.adapters.viewmodels.DeleteUserViewModel;
 import com.motorbike.adapters.viewmodels.GetAllAccessoriesViewModel;
 import com.motorbike.adapters.viewmodels.GetAllMotorbikesViewModel;
+import com.motorbike.adapters.viewmodels.GetUserProfileViewModel;
 import com.motorbike.adapters.viewmodels.ListAllOrdersViewModel;
 import com.motorbike.adapters.viewmodels.ListMyOrdersViewModel;
 import com.motorbike.adapters.viewmodels.ListUsersViewModel;
@@ -53,6 +56,7 @@ import com.motorbike.adapters.viewmodels.UpdateAccessoryViewModel;
 import com.motorbike.adapters.viewmodels.UpdateCartQuantityViewModel;
 import com.motorbike.adapters.viewmodels.UpdateMotorbikeViewModel;
 import com.motorbike.adapters.viewmodels.UpdateOrderInforViewModel;
+import com.motorbike.adapters.viewmodels.UpdateUserProfileViewModel;
 import com.motorbike.adapters.viewmodels.UpdateUserViewModel;
 import com.motorbike.adapters.viewmodels.ViewCartViewModel;
 import com.motorbike.business.ports.repository.AccessoryRepository;
@@ -66,6 +70,7 @@ import com.motorbike.business.usecase.control.AddMotorbikeUseCaseControl;
 import com.motorbike.business.usecase.control.AddToCartUseCaseControl;
 import com.motorbike.business.usecase.control.AddUserUseCaseControl;
 import com.motorbike.business.usecase.control.CancelOrderUseCaseControl;
+import com.motorbike.business.usecase.control.ChangePasswordUseCaseControl;
 import com.motorbike.business.usecase.control.CheckoutUseCaseControl;
 import com.motorbike.business.usecase.control.DeleteAccessoryUseCaseControl;
 import com.motorbike.business.usecase.control.DeleteMotorbikeUseCaseControl;
@@ -73,6 +78,7 @@ import com.motorbike.business.usecase.control.DeleteUserUseCaseControl;
 import com.motorbike.business.usecase.control.GetAllAccessoriesUseCaseControl;
 import com.motorbike.business.usecase.control.GetAllMotorbikesUseCaseControl;
 import com.motorbike.business.usecase.control.GetProductDetailUseCaseControl;
+import com.motorbike.business.usecase.control.GetUserProfileUseCaseControl;
 import com.motorbike.business.usecase.control.ListAllOrdersUseCaseControl;
 import com.motorbike.business.usecase.control.ListMyOrdersUseCaseControl;
 import com.motorbike.business.usecase.control.ListUsersUseCaseControl;
@@ -86,27 +92,33 @@ import com.motorbike.business.usecase.control.UpdateAccessoryUseCaseControl;
 import com.motorbike.business.usecase.control.UpdateCartQuantityUseCaseControl;
 import com.motorbike.business.usecase.control.UpdateMotorbikeUseCaseControl;
 import com.motorbike.business.usecase.control.UpdateOrderInforUseCaseControl;
+import com.motorbike.business.usecase.control.UpdateUserProfileUseCaseControl;
 import com.motorbike.business.usecase.control.UpdateUserUseCaseControl;
 import com.motorbike.business.usecase.control.ViewCartUseCaseControl;
 import com.motorbike.business.usecase.input.AddAccessoryInputBoundary;
+import com.motorbike.business.usecase.input.ChangePasswordInputBoundary;
 import com.motorbike.business.usecase.input.DeleteAccessoryInputBoundary;
 import com.motorbike.business.usecase.input.DeleteMotorbikeInputBoundary;
 import com.motorbike.business.usecase.input.GetAllAccessoriesInputBoundary;
 import com.motorbike.business.usecase.input.GetAllMotorbikesInputBoundary;
+import com.motorbike.business.usecase.input.GetUserProfileInputBoundary;
 import com.motorbike.business.usecase.input.SearchAccessoriesInputBoundary;
 import com.motorbike.business.usecase.input.SearchMotorbikesInputBoundary;
 import com.motorbike.business.usecase.input.UpdateAccessoryInputBoundary;
 import com.motorbike.business.usecase.input.UpdateMotorbikeInputBoundary;
+import com.motorbike.business.usecase.input.UpdateUserProfileInputBoundary;
 import com.motorbike.business.usecase.output.AddAccessoryOutputBoundary;
 import com.motorbike.business.usecase.output.AddMotorbikeOutputBoundary;
 import com.motorbike.business.usecase.output.AddToCartOutputBoundary;
 import com.motorbike.business.usecase.output.CancelOrderOutputBoundary;
+import com.motorbike.business.usecase.output.ChangePasswordOutputBoundary;
 import com.motorbike.business.usecase.output.CheckoutOutputBoundary;
 import com.motorbike.business.usecase.output.DeleteAccessoryOutputBoundary;
 import com.motorbike.business.usecase.output.DeleteMotorbikeOutputBoundary;
 import com.motorbike.business.usecase.output.GetAllAccessoriesOutputBoundary;
 import com.motorbike.business.usecase.output.GetAllMotorbikesOutputBoundary;
 import com.motorbike.business.usecase.output.GetProductDetailOutputBoundary;
+import com.motorbike.business.usecase.output.GetUserProfileOutputBoundary;
 import com.motorbike.business.usecase.output.ListAllOrdersOutputBoundary;
 import com.motorbike.business.usecase.output.ListMyOrdersOutputBoundary;
 import com.motorbike.business.usecase.output.LoginOutputBoundary;
@@ -118,6 +130,7 @@ import com.motorbike.business.usecase.output.SearchMotorbikesOutputBoundary;
 import com.motorbike.business.usecase.output.UpdateAccessoryOutputBoundary;
 import com.motorbike.business.usecase.output.UpdateCartQuantityOutputBoundary;
 import com.motorbike.business.usecase.output.UpdateOrderInforOutputBoundary;
+import com.motorbike.business.usecase.output.UpdateUserProfileOutputBoundary;
 import com.motorbike.business.usecase.output.ViewCartOutputBoundary;
 import com.motorbike.infrastructure.persistence.jpa.repositories.PhuKienXeMayJpaRepository;
 import com.motorbike.infrastructure.persistence.jpa.repositories.XeMayJpaRepository;
@@ -610,6 +623,63 @@ public DeleteAccessoryInputBoundary deleteAccessoryUseCase(DeleteAccessoryOutput
 @Bean
 public AccessoryRepository accessoryRepository(PhuKienXeMayJpaRepository jpa) {
     return new AccessoryRepositoryImpl(jpa);
+}
+
+// GET USER PROFILE USE CASE BEANS
+@Bean
+@RequestScope
+public GetUserProfileViewModel getUserProfileViewModel() {
+    return new GetUserProfileViewModel();
+}
+
+@Bean
+public GetUserProfileOutputBoundary getUserProfileOutputBoundary(@Qualifier("getUserProfileViewModel") GetUserProfileViewModel viewModel) {
+    return viewModel;
+}
+
+@Bean
+public GetUserProfileInputBoundary getUserProfileUseCase(
+        @Qualifier("getUserProfileOutputBoundary") GetUserProfileOutputBoundary outputBoundary,
+        UserRepository userRepository) {
+    return new GetUserProfileUseCaseControl(outputBoundary, userRepository);
+}
+
+// UPDATE USER PROFILE USE CASE BEANS
+@Bean
+@RequestScope
+public UpdateUserProfileViewModel updateUserProfileViewModel() {
+    return new UpdateUserProfileViewModel();
+}
+
+@Bean
+public UpdateUserProfileOutputBoundary updateUserProfileOutputBoundary(@Qualifier("updateUserProfileViewModel") UpdateUserProfileViewModel viewModel) {
+    return viewModel;
+}
+
+@Bean
+public UpdateUserProfileInputBoundary updateUserProfileUseCase(
+        @Qualifier("updateUserProfileOutputBoundary") UpdateUserProfileOutputBoundary outputBoundary,
+        UserRepository userRepository) {
+    return new UpdateUserProfileUseCaseControl(outputBoundary, userRepository);
+}
+
+// CHANGE PASSWORD USE CASE BEANS
+@Bean
+@RequestScope
+public ChangePasswordViewModelImpl changePasswordViewModel() {
+    return new ChangePasswordViewModelImpl();
+}
+
+@Bean
+public ChangePasswordOutputBoundary changePasswordOutputBoundary(@Qualifier("changePasswordViewModel") ChangePasswordViewModelImpl viewModel) {
+    return viewModel;
+}
+
+@Bean
+public ChangePasswordInputBoundary changePasswordUseCase(
+        @Qualifier("changePasswordOutputBoundary") ChangePasswordOutputBoundary outputBoundary,
+        UserRepository userRepository) {
+    return new ChangePasswordUseCaseControl(outputBoundary, userRepository);
 }
 
 }
